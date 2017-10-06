@@ -80,7 +80,7 @@ var create_application_table = function(e) {
     header_row.append($('<th/>').text('Progress'));
     application_table.append(header_row);
 
-    e.jobs.forEach(function(job, i) {
+    e.jobs.slice(0, 20).forEach(function(job, i) {
         application_table.append(create_table_row(job));
     });
 
