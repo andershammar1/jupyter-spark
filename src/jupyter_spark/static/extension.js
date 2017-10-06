@@ -274,7 +274,7 @@ define([
 
         Jupyter.keyboard_manager.command_shortcuts.add_shortcut('Alt-S', show_running_jobs);
         Jupyter.toolbar.add_buttons_group([{
-            'label': 'Show running Spark jobs',
+            'label': 'Spark jobs',
             'icon': 'fa-tasks',
             'callback': show_running_jobs,
             'id': 'show_running_jobs'
