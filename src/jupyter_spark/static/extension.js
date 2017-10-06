@@ -295,7 +295,6 @@ define([
         // Kernel becomes idle after a cell finishes executing
         events.on('kernel_idle.Kernel', remove_progress_bar);
 
-        Jupyter.keyboard_manager.command_shortcuts.add_shortcut('Alt-S', show_running_jobs);
         Jupyter.toolbar.add_buttons_group([{
             'label': 'Spark jobs',
             'icon': 'fa-tasks',
