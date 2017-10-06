@@ -91,7 +91,7 @@ var create_application_table = function(e) {
 var create_table_row = function(e) {
     var row = $('<tr/>');
     row.append($('<td/>').text(e.jobId));
-    row.append($('<td/>').text(e.name));
+    row.append($('<td/>').append($('<a target="_blank"></a>').attr('href', e.url).text(e.name)));
 
     var status_class = get_status_class(e.status);
 
