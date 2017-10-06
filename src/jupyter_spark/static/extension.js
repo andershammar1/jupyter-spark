@@ -57,15 +57,16 @@ var update_cache = function(proxy_url, callbacks) {
     });
 };
 
-var update_dialog_contents = function() {
-    if ($('#dialog_contents').length) {
-        var element = $('<div/>').attr('id', 'dialog_contents');
-        cache.forEach(function(application, i){
+var update_dialog_contents = function () {
+    var element = $('<div/>').attr('id', 'dialog-contents');
+    if (cache.length) {
+        cache.forEach(function (application, i) {
             element.append(create_application_table(application));
         });
-
-        $('#dialog_contents').replaceWith(element);
+    } else {
+        element.text("There are no running Spark jobs.")
     }
+    $('#dialog-contents').replaceWith(element);
 };
 
 var create_application_table = function(e) {
@@ -155,9 +156,9 @@ define([
     var proxy_url = base_url + 'spark';
 
     var show_running_jobs = function() {
-        var element = $('<div/>').attr('id', 'dialog_contents');
+        var element = $('<div/>').attr('id', 'dialog-contents');
         var modal = dialog.modal({
-            title: "Running Spark Jobs",
+            title: "Running Spark jobs",
             body: element,
             buttons: {
                 "Close": {}
