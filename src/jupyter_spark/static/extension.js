@@ -166,7 +166,21 @@ define([
         });
     };
 
-    var spark_progress_bar = function(event, data) {
+    var cancel_running_job = function (jobId) {
+        dialog.modal({
+            title: "Cancel job",
+            body: "Are you sure you want to cancel job " + jobId + "?",
+            buttons: {
+                "Cancel": {},
+                "OK": {
+                    class: "btn-primary",
+                    click: function () { $.get(proxy_url + "/stages/stage/kill/?id=" + jobId) }
+                },
+            }
+        })
+    }
+
+    var spark_progress_bar = function (event, data) {
         var cell = data.cell;
         if (is_spark_cell(cell)) {
             window.clearInterval(current_update_frequency);
@@ -226,11 +240,17 @@ define([
             console.log("No progress counter found");
         };
         if (spark_is_running) {
-            progress_count.text(PROGRESS_COUNT_TEXT + cache[0].jobs[0].jobId + ': ');
+            var jobId = cache[0].jobs[0].jobId;
+            progress_count.text(PROGRESS_COUNT_TEXT + jobId + ': ');
+
             var job_name_link = $('<a target="_blank"></a>')
                 .attr('href', cache[0].jobs[0].url)
                 .text(cache[0].jobs[0].name);
+            var cancel_link = $('<a href="#">(cancel job)</a>')
+                .on('click', function() { cancel_running_job(jobId) })
+                .css({ 'padding-right': '10px', 'float': 'right' });
             progress_count.append(job_name_link);
+            progress_count.append(cancel_link);
         };
 
         progress_count.show();
