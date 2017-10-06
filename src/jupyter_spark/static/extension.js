@@ -201,7 +201,12 @@ define([
             };
             var jobs_completed_container = $('<div/>')
                 .addClass('progress_counter')
-                .css({'border': 'none', 'border-top': '1px solid #cfcfcf', 'padding-left': '10px'})
+                .css({
+                    'border': 'none',
+                    'border-top': '1px solid #cfcfcf',
+                    'padding': '0.2em 0 0.2em 0.4em',
+                    'font-size': '12px'
+                })
                 .text(PROGRESS_COUNT_TEXT + 0 + ": ")
                 .hide();
             var progress_bar_container = $('<div/>')
@@ -249,7 +254,7 @@ define([
                 .text(cache[0].jobs[0].name);
             var cancel_link = $('<a href="#">(cancel job)</a>')
                 .on('click', function() { cancel_running_job(jobId) })
-                .css({ 'padding-right': '10px', 'float': 'right' });
+                .css({ 'padding-right': '0.4em', 'float': 'right' });
             progress_count.append(job_name_link);
             progress_count.append(cancel_link);
         };
