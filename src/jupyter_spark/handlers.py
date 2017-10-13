@@ -10,7 +10,7 @@ class SparkHandler(IPythonHandler):
     def initialize(self, spark):
         self.spark = spark
 
-    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self):
         """
         Fetch the requested URI from the Spark API, replace the
@@ -19,10 +19,18 @@ class SparkHandler(IPythonHandler):
         """
         http = httpclient.AsyncHTTPClient()
         url = self.spark.backend_url(self.request)
+        query = self.request.query
         self.spark.log.debug('Fetching from Spark %s', url)
-        http.fetch(url, self.handle_response)
+        response = yield http.fetch(url, raise_error=False, follow_redirects=False)
 
-    def handle_response(self, response):
+        if response.code == 302:
+            url = response.headers['Location']
+            # Append query params, see https://issues.apache.org/jira/browse/YARN-6615
+            if query:
+                url += '?' + query
+            self.spark.log.debug('Fetching from Hadoop WebProxy %s', url)
+            response = yield http.fetch(url)
+
         if response.error:
             content_type = 'application/json'
             content = json.dumps({'error': 'SPARK_NOT_RUNNING'})

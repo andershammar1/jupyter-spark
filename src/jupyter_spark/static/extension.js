@@ -38,7 +38,7 @@ var update_cache = function(proxy_url, callbacks) {
                     cache[i] = application;
                     cache[i].jobs = jobs;
                     cache[i].jobs.forEach(function(job) {
-                        job.url = proxy_url + '/jobs/job?id=' + job.jobId;
+                        job.url = proxy_url + '/jobs/job/?id=' + job.jobId;
                     });
 
                     num_completed++;
@@ -175,7 +175,7 @@ define([
                 "Cancel": {},
                 "OK": {
                     class: "btn-primary",
-                    click: function () { $.get(proxy_url + "/stages/stage/kill/?id=" + jobId) }
+                    click: function () { $.get(proxy_url + "/jobs/job/kill/?id=" + jobId) }
                 },
             }
         })
