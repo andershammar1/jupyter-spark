@@ -34,6 +34,11 @@ var update_cache = function(proxy_url, callbacks) {
         if(!applications.hasOwnProperty('error')){
             spark_is_running = true;
             applications.forEach(function(application, i) {
+                // When running Spark on EMR an application might be reported as running before
+                // an ID has been assigned to it
+                if (!application.hasOwnProperty('id')) {
+                    return;
+                }
                 $.getJSON(proxy_url + '/api/v1/applications/' + application.id + '/jobs').done(function (jobs) {
                     cache[i] = application;
                     cache[i].jobs = jobs;
