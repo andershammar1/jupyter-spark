@@ -1,5 +1,4 @@
-var UPDATE_FREQUENCY = 10000; // ms
-var UPDATE_FREQUENCY_ACTIVE = 1000;
+var UPDATE_FREQUENCY = 2000; // ms
 var PROGRESS_COUNT_TEXT = "Running Spark job ";
 
 /*
@@ -8,7 +7,8 @@ application.jobs is the result of the /applications/applicationId/jobs
 API request.
 */
 var cache = [];
-var current_update_frequency;
+var update_timer;
+var modal_shown = false;
 
 var spark_is_running = false;
 var cell_queue = [];
@@ -68,11 +68,9 @@ var update_dialog_contents = function () {
         cache.forEach(function (application, i) {
             element.append(create_application_table(application));
         });
-    } else {
-        element.text("There are no running Spark jobs.")
     }
     $('#dialog-contents').replaceWith(element);
-};
+}
 
 var create_application_table = function(e) {
     var application_div = $('<div/>');
@@ -161,14 +159,26 @@ define([
     var proxy_url = base_url + 'spark';
 
     var show_running_jobs = function() {
-        var element = $('<div/>').attr('id', 'dialog-contents');
+        if (!update_timer) {
+            update_timer = window.setInterval(update, UPDATE_FREQUENCY, proxy_url);
+        }
+
         var modal = dialog.modal({
             title: "Running Spark jobs",
-            body: element,
+            body: $('<div/>').attr('id', 'dialog-contents'),
             buttons: {
                 "Close": {}
             },
             open: update_dialog_contents
+        });
+        modal_shown = true;
+
+        modal.on('hidden.bs.modal', function() {
+            if (current_cell == null) {
+                window.clearInterval(update_timer);
+                update_timer = null;
+            }
+            modal_shown = false;
         });
     };
 
@@ -189,13 +199,14 @@ define([
     var spark_progress_bar = function (event, data) {
         var cell = data.cell;
         if (is_spark_cell(cell)) {
-            window.clearInterval(current_update_frequency);
-            current_update_frequency = window.setInterval(update, UPDATE_FREQUENCY_ACTIVE, proxy_url);
+            if (!update_timer) {
+                update_timer = window.setInterval(update, UPDATE_FREQUENCY, proxy_url);
+            }
             cell_queue.push(cell);
             current_cell = cell_queue[0];
             add_progress_bar(current_cell);
-        };
-    };
+        }
+    }
 
     var add_progress_bar = function(cell) {
         var progress_bar_div = cell.element.find('.progress-container');
@@ -287,10 +298,12 @@ define([
         if (current_cell != null) {
             add_progress_bar(current_cell);
         } else {
-            window.clearInterval(current_update_frequency);
-            current_update_frequency = window.setInterval(update, UPDATE_FREQUENCY, proxy_url);
-        };
-    };
+            if (!modal_shown) {
+                window.clearInterval(update_timer);
+                update_timer = null;
+            }
+        }
+    }
 
     var is_spark_cell = function(cell) {
         // TODO: Find a way to detect if cell is actually running Spark
@@ -312,7 +325,6 @@ define([
             'id': 'show_running_jobs'
         }]);
         update(proxy_url);
-        current_update_frequency = window.setInterval(update, UPDATE_FREQUENCY, proxy_url);
     };
 
     return {
