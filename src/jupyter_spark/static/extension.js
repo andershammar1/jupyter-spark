@@ -299,8 +299,11 @@ define([
             add_progress_bar(current_cell);
         } else {
             if (!modal_shown) {
-                window.clearInterval(update_timer);
-                update_timer = null;
+                // wait an extra tick before clearing the update timer
+                window.setTimeout(() => {
+                    window.clearInterval(update_timer);
+                    update_timer = null;
+                }, UPDATE_FREQUENCY);
             }
         }
     }
