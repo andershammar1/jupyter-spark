@@ -59,6 +59,11 @@ var update_cache = function(proxy_url, callbacks) {
         } else {
             spark_is_running = false;
         }
+    })
+    .fail(function(jqXHR) {
+        console.log('Spark proxy request failed (' + jqXHR.status + '): ' + jqXHR.statusText);
+        window.clearInterval(update_timer);
+        update_timer = null;
     });
 };
 
