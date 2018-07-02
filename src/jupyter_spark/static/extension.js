@@ -195,7 +195,7 @@ define([
                 "Cancel": {},
                 "OK": {
                     class: "btn-primary",
-                    click: function () { $.get(proxy_url + "/stages/stage/kill/?id=" + jobId) }
+                    click: function () { $.get(proxy_url + "/jobs/job/kill/?id=" + jobId) }
                 },
             }
         })
